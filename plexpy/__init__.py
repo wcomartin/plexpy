@@ -386,11 +386,11 @@ def dbcheck():
     c_db.execute(
         'CREATE TABLE IF NOT EXISTS session_history_metadata (id INTEGER PRIMARY KEY, '
         'rating_key INTEGER, parent_rating_key INTEGER, grandparent_rating_key INTEGER, '
-        'title TEXT, parent_title TEXT, grandparent_title TEXT, library_title TEXT, full_title TEXT, media_index INTEGER, '
-        'parent_media_index INTEGER,  library_id INTEGER, thumb TEXT, parent_thumb TEXT, grandparent_thumb TEXT, art TEXT, '
-        'media_type TEXT, year INTEGER, originally_available_at TEXT, added_at INTEGER, updated_at INTEGER, '
-        'last_viewed_at INTEGER, content_rating TEXT, summary TEXT, tagline TEXT, rating TEXT, duration INTEGER DEFAULT 0, '
-        'guid TEXT, directors TEXT, writers TEXT, actors TEXT, genres TEXT, studio TEXT)'
+        'title TEXT, parent_title TEXT, grandparent_title TEXT, full_title TEXT, media_index INTEGER, '
+        'parent_media_index INTEGER, library_id INTEGER, thumb TEXT, parent_thumb TEXT, grandparent_thumb TEXT, '
+        'art TEXT, media_type TEXT, year INTEGER, originally_available_at TEXT, added_at INTEGER, updated_at INTEGER, '
+        'last_viewed_at INTEGER, content_rating TEXT, summary TEXT, tagline TEXT, rating TEXT, '
+        'duration INTEGER DEFAULT 0, guid TEXT, directors TEXT, writers TEXT, actors TEXT, genres TEXT, studio TEXT)'
     )
 
     # users table :: This table keeps record of the friends list
@@ -408,6 +408,12 @@ def dbcheck():
         'session_key INTEGER, rating_key INTEGER, user_id INTEGER, user TEXT, '
         'agent_id INTEGER, agent_name TEXT, on_play INTEGER, on_stop INTEGER, on_watched INTEGER, '
         'on_pause INTEGER, on_resume INTEGER, on_buffer INTEGER)'
+    )
+
+    # library_sections table :: This table keeps record of the servers library sections
+    c_db.execute(
+        'CREATE TABLE IF NOT EXISTS library_sections (id INTEGER PRIMARY KEY AUTOINCREMENT, '
+        'section_id INTEGER UNIQUE, section_name TEXT, section_type TEXT)'
     )
 
     # Upgrade sessions table from earlier versions
@@ -605,9 +611,6 @@ def dbcheck():
         logger.debug(u"Altering database. Updating database table session_history_metadata.")
         c_db.execute(
             'ALTER TABLE session_history_metadata ADD COLUMN library_id INTEGER'
-        )
-        c_db.execute(
-            'ALTER TABLE session_history_metadata ADD COLUMN library_title TEXT'
         )
 
     # Upgrade users table from earlier versions

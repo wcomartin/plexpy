@@ -164,6 +164,12 @@ class WebInterface(object):
 
     @cherrypy.expose
     def history(self):
+        from plexpy import datafactory
+        data_factory = datafactory.DataFactory()
+
+        # Make sure our library sections are up to date.
+        data_factory.update_library_sections()
+
         return serve_template(templatename="history.html", title="History")
 
     @cherrypy.expose
@@ -780,6 +786,12 @@ class WebInterface(object):
 
     @cherrypy.expose
     def info(self, library_id=None, item_id=None, source=None, **kwargs):
+        from plexpy import datafactory
+        data_factory = datafactory.DataFactory()
+
+        # Make sure our library sections are up to date.
+        data_factory.update_library_sections()
+
         metadata = None
         query = None
 
@@ -1498,3 +1510,17 @@ class WebInterface(object):
         else:
             logger.debug(u"Unable to update library_id's in database.")
             return "Unable to update library ids in database."
+
+    @cherrypy.expose
+    def update_library_sections(self, **kwargs):
+
+        logger.debug(u"Updating library sections in database.")
+        data_factory = datafactory.DataFactory()
+        result = data_factory.update_library_sections()
+
+        if result:
+            logger.debug(u"Updated all library sections in database.")
+            return "Library sections updated."
+        else:
+            logger.debug(u"Unable to update library sections in database.")
+            return "Unable to update library sections in database."

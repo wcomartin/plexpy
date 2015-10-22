@@ -346,10 +346,11 @@ class PmsConnect(object):
                 metadata_type = helpers.get_xml_attr(metadata_main, 'type')
             else:
                 logger.debug(u"Metadata failed")
+                return None
 
             library_id = helpers.get_xml_attr(a, 'librarySectionID')
             library_title = helpers.get_xml_attr(a, 'librarySectionTitle')
-            
+
         genres = []
         actors = []
         writers = []
@@ -1552,7 +1553,10 @@ class PmsConnect(object):
             match_type = 'title'
         else:
             match_type = 'index'
-        
+
+        library_id = None
+        library_title = None
+
         # get grandparent rating key
         if media_type == 'season' or media_type == 'album':
             try:
@@ -1635,16 +1639,17 @@ class PmsConnect(object):
                     
                     key = int(parent_index) if match_type == 'index' else parent_title
                     parents.update({key: 
-                                {'rating_key': int(parent_rating_key),
-                                'children': children}
-                                })
+                                    {'rating_key': int(parent_rating_key),
+                                     'children': children}
+                                    })
         
         key = 0 if match_type == 'index' else title
         key_list = {key:
                     {'rating_key': int(rating_key),
-                     'children': parents},
+                     'children': parents },
                     'library_id': library_id,
                     'library_title': library_title
                     }
 
         return key_list
+

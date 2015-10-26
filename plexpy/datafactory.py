@@ -1040,8 +1040,11 @@ class DataFactory(object):
 
             if result:
                 metadata = result['metadata']
-                monitor_db.action('UPDATE session_history_metadata SET library_id = ? WHERE id = ?',
-                                  [metadata['library_id'], id])
+
+                section_keys = {'id': id}
+                section_values = {'library_id': metadata['library_id']}
+
+                monitor_db.upsert('session_history_metadata', key_dict=section_keys, value_dict=section_values)
             else:
                 continue
 

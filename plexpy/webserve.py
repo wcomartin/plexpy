@@ -617,10 +617,19 @@ class WebInterface(object):
         return self.do_state_change('update', 'Updating', 120)
 
     @cherrypy.expose
-    def api(self, *args, **kwargs):
-        from plexpy.api import Api
+    def api_system(self, *args, **kwargs):
+        from plexpy.api_system import ApiSystem
 
-        a = Api()
+        a = ApiSystem()
+        a.checkParams(*args, **kwargs)
+
+        return a.fetchData()
+
+    @cherrypy.expose
+    def api_data(self, *args, **kwargs):
+        from plexpy.api_data import ApiData
+
+        a = ApiData()
         a.checkParams(*args, **kwargs)
 
         return a.fetchData()

@@ -28,7 +28,7 @@ class DataFactory(object):
 
     def get_history(self, kwargs=None, custom_where=None, grouping=0, watched_percent=85):
         data_tables = datatables.DataTables()
-        
+
         group_by = ['session_history.reference_id'] if grouping else ['session_history.id']
 
         columns = ['session_history.reference_id',
@@ -37,8 +37,8 @@ class DataFactory(object):
                    'MIN(started) AS started',
                    'MAX(stopped) AS stopped',
                    'SUM(CASE WHEN stopped > 0 THEN (stopped - started) ELSE 0 END) - \
-		            SUM(CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) AS duration', 
-                   'SUM(CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) AS paused_counter', 
+		            SUM(CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) AS duration',
+                   'SUM(CASE WHEN paused_counter IS NULL THEN 0 ELSE paused_counter END) AS paused_counter',
                    'session_history.user_id',
                    'session_history.user',
                    '(CASE WHEN users.friendly_name IS NULL THEN user ELSE users.friendly_name END) as friendly_name',
@@ -88,7 +88,7 @@ class DataFactory(object):
                     'error': 'Unable to execute database query.'}
 
         history = query['result']
-        
+
         rows = []
         for item in history:
             if item["media_type"] == 'episode' and item["parent_thumb"]:
@@ -143,7 +143,7 @@ class DataFactory(object):
                    }
 
             rows.append(row)
-        
+
         dict = {'recordsFiltered': query['filteredCount'],
                 'recordsTotal': query['totalCount'],
                 'data': rows,
@@ -934,7 +934,7 @@ class DataFactory(object):
                                  })
 
         key_list = grandparents
-        
+
         return key_list
 
     def update_rating_key(self, old_key_list='', new_key_list='', media_type=''):
@@ -956,48 +956,48 @@ class DataFactory(object):
         mapping = {}
         if old_key_list and new_key_list:
             mapping = get_pairs(old_key_list, new_key_list)
-        
+
         if mapping:
             logger.info(u"PlexPy DataFactory :: Updating rating keys in the database.")
             for old_key, new_key in mapping.iteritems():
                 # check rating_key (3 tables)
-                monitor_db.action('UPDATE session_history SET rating_key = ? WHERE rating_key = ?', 
+                monitor_db.action('UPDATE session_history SET rating_key = ? WHERE rating_key = ?',
                                   [new_key, old_key])
-                monitor_db.action('UPDATE session_history_media_info SET rating_key = ? WHERE rating_key = ?', 
+                monitor_db.action('UPDATE session_history_media_info SET rating_key = ? WHERE rating_key = ?',
                                   [new_key, old_key])
-                monitor_db.action('UPDATE session_history_metadata SET rating_key = ? WHERE rating_key = ?', 
+                monitor_db.action('UPDATE session_history_metadata SET rating_key = ? WHERE rating_key = ?',
                                   [new_key, old_key])
 
                 # check parent_rating_key (2 tables)
-                monitor_db.action('UPDATE session_history SET parent_rating_key = ? WHERE parent_rating_key = ?', 
+                monitor_db.action('UPDATE session_history SET parent_rating_key = ? WHERE parent_rating_key = ?',
                                   [new_key, old_key])
-                monitor_db.action('UPDATE session_history_metadata SET parent_rating_key = ? WHERE parent_rating_key = ?', 
+                monitor_db.action('UPDATE session_history_metadata SET parent_rating_key = ? WHERE parent_rating_key = ?',
                                   [new_key, old_key])
 
                 # check grandparent_rating_key (2 tables)
-                monitor_db.action('UPDATE session_history SET grandparent_rating_key = ? WHERE grandparent_rating_key = ?', 
+                monitor_db.action('UPDATE session_history SET grandparent_rating_key = ? WHERE grandparent_rating_key = ?',
                                   [new_key, old_key])
-                monitor_db.action('UPDATE session_history_metadata SET grandparent_rating_key = ? WHERE grandparent_rating_key = ?', 
+                monitor_db.action('UPDATE session_history_metadata SET grandparent_rating_key = ? WHERE grandparent_rating_key = ?',
                                   [new_key, old_key])
 
                 # check thumb (1 table)
                 monitor_db.action('UPDATE session_history_metadata SET thumb = replace(thumb, ?, ?) \
-                                  WHERE thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key, 
+                                  WHERE thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key,
                                   [old_key, new_key])
 
                 # check parent_thumb (1 table)
                 monitor_db.action('UPDATE session_history_metadata SET parent_thumb = replace(parent_thumb, ?, ?) \
-                                  WHERE parent_thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key, 
+                                  WHERE parent_thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key,
                                   [old_key, new_key])
 
                 # check grandparent_thumb (1 table)
                 monitor_db.action('UPDATE session_history_metadata SET grandparent_thumb = replace(grandparent_thumb, ?, ?) \
-                                  WHERE grandparent_thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key, 
+                                  WHERE grandparent_thumb LIKE "/library/metadata/%s/thumb/%%"' % old_key,
                                   [old_key, new_key])
 
                 # check art (1 table)
                 monitor_db.action('UPDATE session_history_metadata SET art = replace(art, ?, ?) \
-                                  WHERE art LIKE "/library/metadata/%s/art/%%"' % old_key, 
+                                  WHERE art LIKE "/library/metadata/%s/art/%%"' % old_key,
                                   [old_key, new_key])
 
             return 'Updated rating key in database.'
